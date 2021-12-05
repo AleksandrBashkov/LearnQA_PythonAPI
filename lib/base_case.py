@@ -1,6 +1,7 @@
 import json
-
 from requests import Response
+from datetime import datetime
+
 class BaseCase:
     def get_cookie(self, response : Response, cookie_name):
         assert cookie_name in response.cookies, f"Cannot find cookie with name {cookie_name}in the last response"
@@ -19,3 +20,20 @@ class BaseCase:
         assert name in response_as_dict, f"Response JSON doesn't have key {name}"
 
         return response_as_dict[name]
+
+    def prepare_registration_data(self, email=None, username=None):
+        if email is None:
+            base_part = "learnqa"
+            domain = "example.com"
+            random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+            email = f"{base_part}{random_part}@{domain}"
+        if username is None:
+            username = 'learnqa'
+
+        return {
+            'password': '123',
+            'username': 'learnqa',
+            'firstName': 'learnqa',
+            'lastName': username,
+            'email': email
+        }
