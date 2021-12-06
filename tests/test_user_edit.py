@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 
-@allure.epic("Update data user cases")
+@allure.epic("Update data users cases")
 class TestUserEdit(BaseCase):
 
     @allure.severity(allure.severity_level.NORMAL)

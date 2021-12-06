@@ -6,7 +6,7 @@ from lib.assertions import Assertions
 import random
 import string
 
-@allure.epic("Registration Cases")
+@allure.epic("Registration users cases")
 class TestUserRegister(BaseCase):
     data_user = [
         {

@@ -4,7 +4,7 @@ from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
-@allure.epic("Get data users cases")
+@allure.epic("Get data users Cases")
 class TestGetUser(BaseCase):
 
     @allure.description("Obtaining data under an unauthorized username")

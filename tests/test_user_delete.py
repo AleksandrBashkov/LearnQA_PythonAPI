@@ -5,7 +5,7 @@ from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
 
-@allure.epic("Delete user cases")
+@allure.epic("Delete users cases")
 class TestUserDelete(BaseCase):
 
     @allure.severity(allure.severity_level.BLOCKER)
