@@ -1,8 +1,10 @@
 import pytest
-import requests
+from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+import allure
 
+@allure.epic("Authorization cases")
 class TestUserAuth(BaseCase):
     exclude_params = [
         ("no cookie"),
@@ -13,17 +15,20 @@ class TestUserAuth(BaseCase):
             'email': 'vinkotov@example.com',
             'password': '1234'
         }
-        response1 = requests.post("https://playground.learnqa.ru/api/user/login", data=data)
+        response1 = MyRequests.post("/user/login", data=data)
         self.auth_sid = self.get_cookie(response1, "auth_sid")
         self.x_csrf_token = self.get_header(response1, "x-csrf-token")
         self.user_id_from_method = self.get_json_value(response1, "user_id")
 
+    @allure.feature("Authorization user")
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.description("This test successfully authorize user by email and password")
     def test_auth_user(self):
 
-        response2 = requests.get(
-            "https://playground.learnqa.ru/api/user/auth",
+        response2 = MyRequests.get(
+            "/user/auth",
             headers={"x-csrf-token": self.x_csrf_token},
-            cookies={"auth_sid":self.auth_sid}
+            cookies={"auth_sid": self.auth_sid}
         )
 
         Assertions.assert_json_value_by_name(
@@ -33,17 +38,20 @@ class TestUserAuth(BaseCase):
             "User id from method is not equal to user id from check method"
         )
 
+    @allure.feature("Authorization without params")
+    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.description("This test check authorization status without sending auth cookie or token")
     @pytest.mark.parametrize('condition', exclude_params)
     def test_auth_negative_check(self, condition):
 
         if condition == "cookie":
-            response2 = requests.get(
-                "https://playground.learnqa.ru/api/user/auth",
+            response2 = MyRequests.get(
+                "/user/auth",
                 headers={"x-csrf-token":self.x_csrf_token}
             )
         else:
-            response2 = requests.get(
-                "https://playground.learnqa.ru/api/user/auth",
+            response2 = MyRequests.get(
+                "/user/auth",
                 cookies={"auth_sid": self.auth_sid}
             )
         Assertions.assert_json_value_by_name(

@@ -1,3 +1,4 @@
+import allure
 import pytest
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
@@ -5,7 +6,7 @@ from lib.assertions import Assertions
 import random
 import string
 
-
+@allure.epic("Registration Cases")
 class TestUserRegister(BaseCase):
     data_user = [
         {
@@ -38,6 +39,9 @@ class TestUserRegister(BaseCase):
             'firstName': 'learnqa',
             'lastName': 'vinkotov@example.com'
         }]
+
+    @allure.description("Registration users")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_user_successfully(self):
         data = self.prepare_registration_data()
 
@@ -46,6 +50,8 @@ class TestUserRegister(BaseCase):
         Assertions.assert_json_status_code(response, 200)
         Assertions.assert_json_has_key(response, "id")
 
+    @allure.description("Registration users with existing email")
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
@@ -55,6 +61,8 @@ class TestUserRegister(BaseCase):
         Assertions.assert_json_status_code(response, 400)
         assert response.content.decode("utf-8") == f"Users with email '{email}' already exists", f"Unexpected response content {response.content}"
 
+    @allure.description("Registration users with incorrect email")
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_user_with_incorrect_email(self):
         letters = string.ascii_lowercase
         email = ''.join(random.choice(letters) for i in range(10)) + 'example.com'
@@ -66,6 +74,8 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"Invalid email format", \
             f"Unexpected response content {response.content}"
 
+    @allure.description("Registration users with short name")
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_user_with_short_name(self):
         letters = string.ascii_lowercase
         firstName = random.choice(letters)
@@ -78,6 +88,8 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"The value of 'lastName' field is too short", \
             f"Unexpected response content {response.content}"
 
+    @allure.description("Registration users with long name")
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_user_with_long_name(self):
         small_letters = string.ascii_lowercase
         up_letters = string.ascii_uppercase
@@ -91,8 +103,11 @@ class TestUserRegister(BaseCase):
         assert response.content.decode("utf-8") == f"The value of 'lastName' field is too long", \
             f"Unexpected response content {response.content}"
 
+
+    @allure.description("Checking the mandatory filling of all fields during registration")
+    @allure.severity(allure.severity_level.BLOCKER)
     @pytest.mark.parametrize('data', data_user)
-    def test_check_with_out_field(self, data):
+    def test_check_without_data(self, data):
         response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_json_status_code(response, 400)

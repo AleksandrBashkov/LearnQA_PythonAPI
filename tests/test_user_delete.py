@@ -1,9 +1,15 @@
+import allure
+
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
 
+@allure.epic("Delete user cases")
 class TestUserDelete(BaseCase):
+
+    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.description("Deleting a user for whom deletion is prohibited")
     def test_delete_blocked_user(self):
         data = {
             'email': 'vinkotov@example.com',
@@ -18,7 +24,7 @@ class TestUserDelete(BaseCase):
         token = self.get_header(response1, "x-csrf-token")
         user_id_from_auth_method = self.get_json_value(response1, "user_id")
 
-        # Удаление пользователя, для которого удаление запрощено
+        # Удаление пользователя, для которого удаление запрещено
 
         response2 = MyRequests.delete(f"/user/{user_id_from_auth_method}",
                                       headers={"x-csrf-token": token},
@@ -29,6 +35,8 @@ class TestUserDelete(BaseCase):
         assert response2.content.decode("utf-8") == 'Please, do not delete test users with ID 1, 2, 3, 4 or 5.', \
             f"Unexpected response content {response2.content}"
 
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.description("Deleting a user and checking that the user is deleted")
     def test_positive_delete_user(self):
         registration_data = self.prepare_registration_data()
 
@@ -69,6 +77,8 @@ class TestUserDelete(BaseCase):
         assert response4.content.decode("utf-8") == 'User not found', \
             f"Unexpected response content {response4.content}"
 
+    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.description("Deleting a user while being authorized by another user")
     def test_negative_delete_user(self):
         registration_data = self.prepare_registration_data()
 
